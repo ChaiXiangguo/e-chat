@@ -1,0 +1,107 @@
+html,
+body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+form {
+    float: left;
+    margin-left: 120px;
+    margin-top: 10px;
+}
+
+input {
+    color: #656565;
+    width: 200px;
+    height: 25px
+}
+
+#errorInfor {
+    color: red;
+    font-size: 14px
+}
+
+
+/* .password-input {
+    border-top: 0;
+} */
+
+.login-button {
+    margin-top: 10px;
+    background: #00A3E1;
+    color: #FFF;
+    height: 35px;
+    border: 0;
+    width: 90px;
+    border-radius: 4px;
+    margin-left: 5px;
+    margin-right: 5px
+}
+
+.registerform-button {
+    margin-top: 10px;
+    background: #00A3E1;
+    color: #FFF;
+    height: 35px;
+    border: 0;
+    width: 200px;
+    border-radius: 4px;
+    margin-left: 5px;
+    margin-right: 5px
+}
+
+.header {
+    background: #33469D;
+    height: 140px;
+    position: relative;
+    overflow: hidden
+}
+
+.title-text {
+    z-index: 6;
+    position: absolute;
+    color: #F1F1F1;
+    display: inline-block;
+    width: 200px;
+    font-size: 20px;
+    height: 100px;
+    top: 60px;
+    right: 50px
+}
+
+.trans1 {
+    z-index: 5;
+    background: #0776D1;
+    height: 180px;
+    left: -110px;
+    top: 50px;
+    display: inline-block;
+    overflow: hidden;
+    transform: rotate(45deg);
+    width: 240px;
+    position: absolute
+}
+
+.trans2 {
+    top: -82px;
+    z-index: 4;
+    background: #3D4FAE;
+    height: 200px;
+    left: 70px;
+    display: inline-block;
+    overflow: hidden;
+    transform: rotate(-45deg);
+    width: 300px;
+    position: absolute
+}
+
+.body {
+    height: 170px;
+    background: #EBF2EF;
+}
+
+#registerform {
+    display: none
+}

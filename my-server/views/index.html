@@ -1,0 +1,47 @@
+<!-- extends layout
+
+block content
+  h1= title
+  p Welcome to #{title} -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>
+        <%= title %>
+    </title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <style type="text/css">
+        a {
+            margin-left: 20px;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .home-page {
+            width: 500px;
+            height: 640px;
+            padding: 5px;
+            margin: 0 auto;
+            background-color: #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="home-page">
+        <h1>
+            煮菜不燃柴Chat :)1.0
+        </h1>
+        <p>Welcome to 煮菜不燃柴Chat :)1.0</p>
+        <p><a href="/login">登录 </a>
+            <a href="/register">   注册</a>
+        </p>
+    </div>
+</body>
+
+</html>

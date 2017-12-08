@@ -1,0 +1,62 @@
+html body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+#root {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.root-right-body {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    background: #363636
+}
+
+.root-left {
+    width: 25%;
+    height: 100%;
+    background: #541236
+}
+
+.root-right {
+    width: 75%;
+    height: 100%;
+    background: #365214
+}
+
+.root-right-header {
+    height: 50px;
+    background: #409214
+}
+
+.root-right-left {
+    height: 100%;
+    width: 70%;
+    background: #841243
+}
+
+.root-right-right {
+    height: 100%;
+    width: 30%;
+    background: #471245
+}
+
+.talk-infor {
+    height: 70%;
+    background: #103025
+}
+
+.talk-input {
+    height: 30%;
+    background: #904650
+}

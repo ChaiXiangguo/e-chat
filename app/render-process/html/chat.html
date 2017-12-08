@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>聊天室</title>
+  <link rel="stylesheet" href="./chat.css" media="screen">
+  <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+  <!-- <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet"> -->
+</head>
+
+<body>
+  <div class="root-box">
+    <div class="left-box">
+      <div class="content-box">
+        <div class="tabs">
+          <ul id="tabs">
+            <li class="tab-nav-action">聊天</li>
+            <li id="managemenTabs" class="tab-nav">好友管理</li>
+            <li class="tab-nav">有聊群组</li>
+          </ul>
+        </div>
+        <div id="tabs-body" class="tabs-body">
+          <div class="chat-friends" style="display:block">
+            <div class="item-chat">
+              <img src="./content/img/1.jpg">
+              <p>Taylor Swift</p>
+              <i class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div class="item-chat">
+              <img src="./content/img/2.jpg">
+              <p>Taylor Swift</p>
+              <i class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div class="item-chat">
+              <img src="./content/img/3.jpg">
+              <p>Taylor Swift</p>
+              <i class="fa fa-times" aria-hidden="true"></i>
+            </div>
+          </div>
+          <div class="manage-friends" id="manageFriends" style="display:none">
+          </div>
+          <div class="manage-friends" id="manageChatGroup" style="display:none">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="center-box">
+      <ul id="chatbox" class="chat-thread"></ul>
+      <div class="chat-window-box">
+        <div class="shortcut-btn">
+          <i class="fa fa-picture-o" aria-hidden="true"></i>
+          <i id="emoji" class="fa fa-smile-o" aria-hidden="true"></i>
+          <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </div>
+        <div id="sendMsgbtn" class="send-btn">
+          <i class="fa fa-paper-plane" aria-hidden="true"></i>
+        </div>
+        <textarea id="messageInput" rows="3" cols="20" class="chat-window-message" autofocus></textarea>
+      </div>
+      <div id="emojiWrapper">
+      </div>
+    </div>
+    <div class="right-box">
+      <div class="content-box">
+        <div class="infor-friends">
+          <p>消息</p>
+        </div>
+        <div class="get-infor-div" id="getInforDiv">
+        </div>
+        <div class="infor-friends">
+          <div id="addFriends" class="add-friends">好友管理</div>
+          <p>好友信息</p>
+        </div>
+        <div class="body-right-tabs">
+          <div id="tabsInfo" class="tabs-info" style="display:block">
+          </div>
+          <div id="tabsAdd" class="search-friends" style="display:none">
+            <div class="ftabs">
+              <ul id="ftabs">
+                <li class="tab-nav-action">查找好友</li>
+                <li id="managemenTabs" class="tab-nav">搜索群</li>
+                <li class="tab-nav">新建群</li>
+              </ul>
+            </div>
+            <div id="ftabs-body">
+              <div>
+                <input id="searchValue" placeholder="输入账号或用户名搜索" class="search-text" type="text">
+                <input id="searchBtn" class="search-btn" type="button" value="搜索">
+                <div id="searchInforBox" class="forBox"></div>
+                <input type="hidden" id="seachNameId" value="">
+              </div>
+              <div class="dis-div">
+                <input id="searchGValue" placeholder="输入账号或群名搜索" class="search-text" type="text">
+                <input id="searchGBtn" class="search-btn" type="button" value="搜索">
+                <div id="searchGInforBox" class="forBox"></div>
+                <input type="hidden" id="seachGNameId" value="">
+              </div>
+              <div class="dis-div">
+                <input id="addGValue" placeholder="输入新建群名" class="search-text" type="text">
+                <input id="addGBtn" class="search-btn" type="button" value="新建">
+                <div id="addGInforBox" class="forBox">
+                </div>
+                <input type="hidden" id="seachNameId" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-div" id="modal" style="display:none">
+    <div id="modal-box">
+      <div class="modal-title">
+        提示
+      </div>
+      <div class="modal-body">
+        <div>
+          <lable>选择好友组：</lable>
+          <select id="selecFG"></select>
+        <button id="creatfg">新添加好友列表</button>
+        </div>
+      <div id="creatfGin" style="display: none">
+       <lable>好友列表名称：</lable> <input id="Addfgv" type="text"> <button id="sureAddfg">确认</button>
+      </div>
+      <div id="scfGin" style="display: none">
+       <p>创建好友分组成功</p>
+      </div>
+      <div>
+      </div>
+      </div>
+      <div class="modal-foot">
+        <button id="okFun">确认</button>
+        <button id="cancelFun">取消</button>
+      </div>
+    </div>
+  </div>
+  <!-- <script type="text/javascript" src="./jquery.min.js"></script> -->
+  <script type="text/javascript" src="./chat.js"></script>
+  <script type="text/javascript" src="http://localhost:5000/socket.io/socket.io.js"></script> 
+  <script type="text/javascript" src="./chatajax.js"></script>
+</body>
+
+</html>
