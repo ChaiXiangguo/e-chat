@@ -8,6 +8,7 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "lowdb": "^1.0.0",
+    "nedb": "^1.8.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.13",
@@ -18,8 +19,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "packager": "electron-packager ./app mclans --all --out ./OutApp --version 0.37.3 --overwrite --icon=./app/img/icon/logo.png",
-    "repackager": "electron-packager . 有聊 --win --out ../HelloWorldApp --arch=x64 --version=0.0.1 --electron-version=1.7.6"
+    "repackager": "electron-packager . 有聊 --win --out ../HelloWorldApp --arch=x64 --version=0.0.1 --electron-version=1.7.6 --overwrite --icon=./app/img/icon/menu.ico"
   },
   "devDependencies": {
     "electron-packager": "^9.1.0"

@@ -57,7 +57,6 @@ function createWindow() {
         win = null
     })
     ipcMain.on('login-success', (data) => {
-        console.log(data)
         win.destroy()
         win = null
     })

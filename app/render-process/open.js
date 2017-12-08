@@ -15,7 +15,7 @@ submit.onclick = () => {
     };
     console.log(data)
     $.ajax({
-        url: 'http://localhost:5000/login',
+        url: 'http://192.168.20.118:5000/login',
         type: 'post',
         data: data,
         success: function (data, status) {
@@ -63,7 +63,7 @@ $("#registerfun").click(function () {
     } else if (password === password1) {
         var data = { "uname": username, "upwd": password };
         $.ajax({
-            url: 'http://localhost:5000/register',
+            url: 'http://192.168.20.118:5000/register',
             type: 'post',
             data: data,
             success: function (data, status) {

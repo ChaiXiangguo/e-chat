@@ -1,7 +1,8 @@
 // const $ = require('jquery')
 const { BrowserWindow } = require('electron').remote;
 const { ipcRenderer } = require('electron')
-
+const nedb = require('nedb')
+let db
 // import io from 'socket.io-client'
 var requstUser = '' // 请求好友的Id
 var monmentChat = '' //当前窗口聊天的对象
@@ -11,7 +12,7 @@ onload = () => {
     $(".modal-div").on("click", "#sureAddfg", function () {
         if ($("#Addfgv").val()) {
             $.ajax({
-                url: 'http://localhost:5000/groups/',
+                url: 'http://192.168.20.118:5000/groups/',
                 type: 'post',
                 data: { gname: $("#Addfgv").val(), userId: localStorage.selfUserId },
                 success: function (data, status) {
@@ -34,6 +35,24 @@ onload = () => {
     ipcRenderer.on('msg', (event, winId, msg) => {
         selfUserId = msg._id
         localStorage.selfUserId = msg._id;
+        db = new nedb({
+            filename: `./data/${msg._id}.db`,
+            autoload: true
+        })
+        db.find({form: 'user'}, function(err, sucs) {
+            let defaultItemhtml = ''
+            for (let i = 0; i < sucs.length; i++ ) {
+                if (sucs[i].type = 'single') {
+                    
+                }
+                defaultItemhtml = defaultItemhtml + '<div nameId="'
+                + sucs[i].nameId +
+                 'class="item-chat"><img src="./content/img/1.jpg"><p>' +
+                sucs[i].namem
+                + '</p><i class="fa fa-times" aria-hidden="true"></i></div>'
+            }
+            $('#defaultItem').html(defaultItemhtml)
+        })
         $("#manageFriends").html(friendMhtml(msg))
         $("#getInforDiv").html(inforHtmlDiv(msg.framef))
         $("#manageChatGroup").html(chatgroupFun(msg.chatgroup))
@@ -41,7 +60,7 @@ onload = () => {
     })
     // sockit
     function socketFun(uid) {
-        socket = io.connect('http://localhost:5000');
+        socket = io.connect('http://192.168.20.118:5000');
         socket.on("connect", function () {
             socket.emit('login', { user: uid });
             socket.on("toSomeone", function (data) {
@@ -92,13 +111,44 @@ onload = () => {
     // 展开群成员
     $("#manageChatGroup").on("click", "span", function () {
         monmentChat = $(this).attr("infor")
+        let namem = $(this, 'p').text()
+        db.findOne({ nameId: monmentChat }, function (err, docs) {
+            // docs contains Mars 
+            if (err) {
+                console.log('find user err', err)
+            } else {
+                if (!docs) {
+                    db.insert({
+                        nameId: monmentChat,
+                        type: 'group',
+                        form: 'user',
+                        namem: namem,
+                        updata: new Date()
+                    }, (err, ret) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            console.log(ret)
+                        }
+                    })
+                } else {
+                    db.update({ nameId: monmentChat }, { $set: { updata: new Date() } }, { multi: false }, function (err, numReplaced) {
+                        if (err) {
+                            console.log('updata user err', err)
+                        } else {
+                            console.log('updata user`data is', numReplaced)
+                        }
+                    });
+                }
+            }
+        })
         chatType = 'group'
         var disvalueG = $(this).next('ul').css("display") === 'block' ? 'none' : 'block'
         console.log(disvalueG)
         let that = this
         if (disvalueG === 'block') {
             $.ajax({
-                url: 'http://localhost:5000/groupsmember/' + $(this).children("input").val(),
+                url: 'http://192.168.20.118:5000/groupsmember/' + $(this).children("input").val(),
                 type: 'get',
                 success: function (data, status) {
                     var gmemberHtml = ''
@@ -125,15 +175,15 @@ onload = () => {
     // 查询聊天群
     $("#searchGBtn").on("click", function () {
         $.ajax({
-            url: 'http://localhost:5000/chatgroups/' + $("#searchGValue").val(),
+            url: 'http://192.168.20.118:5000/chatgroups/' + $("#searchGValue").val(),
             type: 'get',
             success: function (data, status) {
-              let searchGhtml = ''
-              searchGhtml = '<ul><li>有聊群名：' +
-                             data.cgname + '</li><li>有聊账号：'
-                             + data.gnumber +'</li></ul><button id="addGsuss">加入该群</button>'
-              $("#seachGNameId").val(data._id)               
-              $("#searchGInforBox").html(searchGhtml)
+                let searchGhtml = ''
+                searchGhtml = '<ul><li>有聊群名：' +
+                    data.cgname + '</li><li>有聊账号：'
+                    + data.gnumber + '</li></ul><button id="addGsuss">加入该群</button>'
+                $("#seachGNameId").val(data._id)
+                $("#searchGInforBox").html(searchGhtml)
             },
             error: function (data, status) {
                 if (status == 'error') {
@@ -142,16 +192,16 @@ onload = () => {
             }
         });
     })
-    $("#searchGInforBox").on("click", "#addGsuss", function() {
+    $("#searchGInforBox").on("click", "#addGsuss", function () {
         $.ajax({
-            url: 'http://localhost:5000/addchatgroups',
+            url: 'http://192.168.20.118:5000/addchatgroups',
             type: 'post',
-            data: {gid: $("#seachGNameId").val(), uid: localStorage.selfUserId},
+            data: { gid: $("#seachGNameId").val(), uid: localStorage.selfUserId },
             success: function (data, status) {
-            //   let searchGhtml = ''
-            //   searchGhtml = ''
-            //   $("#seachGNameId").val(data._id)               
-              $("#searchGInforBox").html('<p>加群成功<i class="fa fa-check" aria-hidden="true"></i></p>')
+                //   let searchGhtml = ''
+                //   searchGhtml = ''
+                //   $("#seachGNameId").val(data._id)               
+                $("#searchGInforBox").html('<p>加群成功<i class="fa fa-check" aria-hidden="true"></i></p>')
             },
             error: function (data, status) {
                 if (status == 'error') {
@@ -165,7 +215,7 @@ onload = () => {
     function addGroup() {
         if ($("#addGValue").val()) {
             $.ajax({
-                url: 'http://localhost:5000/chatgroups',
+                url: 'http://192.168.20.118:5000/chatgroups',
                 type: 'post',
                 data: { cgname: $("#addGValue").val(), userId: localStorage.selfUserId },
                 success: function (data, status) {
@@ -191,7 +241,7 @@ onload = () => {
     function searchFun() {
         if ($("#searchValue").val()) {
             $.ajax({
-                url: 'http://localhost:5000/friendsinfo/' + $("#searchValue").val(),
+                url: 'http://192.168.20.118:5000/friendsinfo/' + $("#searchValue").val(),
                 type: 'get',
                 success: function (data, status) {
                     var sex = data.sex === 'boy' ? '男♂' : '女♀'
@@ -220,7 +270,7 @@ onload = () => {
     $("#searchInforBox").on('click', '#addFclick', function () {
         console.log($("#seachNameId").val())
         $.ajax({
-            url: 'http://localhost:5000/reqfriends',
+            url: 'http://192.168.20.118:5000/reqfriends',
             type: 'post',
             data: { addUser: $("#seachNameId").val(), userId: localStorage.selfUserId },
             success: function (data, status) {
@@ -238,11 +288,12 @@ onload = () => {
     $("#manageFriends").on("click", "li", function () {
         let that = this
         $.ajax({
-            url: 'http://localhost:5000/idfriendsinfo/' + $(this).attr('infor'),
+            url: 'http://192.168.20.118:5000/idfriendsinfo/' + $(this).attr('infor'),
             type: 'get',
             success: function (data, status) {
                 console.log($(that).attr('infor'), data._id)
                 monmentChat = $(that).attr('infor')
+                let namem = $(that, 'p').text()
                 chatType = 'single'
                 let sexb = data.sex === 'boy' ? '男♂' : '女♀'
                 let statusb = data.status === 'down' ? '离线' : '在线'
@@ -253,6 +304,36 @@ onload = () => {
                     + '</li><li>签名：'
                     + data.signature + '</li></ul>'
                 $("#tabsInfo").html(searchHtml)
+                db.findOne({ nameId: monmentChat }, function (err, docs) {
+                    // docs contains Mars 
+                    if (err) {
+                        console.log('find user err', err)
+                    } else {
+                        if (!docs) {
+                            db.insert({
+                                nameId: monmentChat,
+                                type: 'single',
+                                form: 'user',
+                                namem: namem,
+                                updata: new Date()
+                            }, (err, ret) => {
+                                if (err) {
+                                    console.log(err)
+                                } else {
+                                    console.log(ret)
+                                }
+                            })
+                        } else {
+                            db.update({ nameId: monmentChat }, { $set: { updata: new Date() } }, { multi: false }, function (err, numReplaced) {
+                                if (err) {
+                                    console.log('updata user err', err)
+                                } else {
+                                    console.log('updata user`data is', numReplaced)
+                                }
+                            });
+                        }
+                    }
+                })
             },
             error: function (data, status) {
                 if (status == 'error') {
@@ -283,7 +364,7 @@ onload = () => {
     $("#getInforDiv").on("click", ".agreef", function () {
         requstUser = $(this).attr("infor")
         $.ajax({
-            url: 'http://localhost:5000/friends/' + localStorage.selfUserId,
+            url: 'http://192.168.20.118:5000/friends/' + localStorage.selfUserId,
             type: 'get',
             success: function (data, status) {
                 let optionshtml = ''
@@ -306,7 +387,7 @@ onload = () => {
     })
     $("#okFun").on("click", function () {
         $.ajax({
-            url: 'http://localhost:5000/friends',
+            url: 'http://192.168.20.118:5000/friends',
             type: 'post',
             data: { userId: localStorage.selfUserId, addUser: requstUser, groupId: $('#selecFG').val() },
             success: function (data, status) {
@@ -348,7 +429,7 @@ onload = () => {
     }
     function friendMfun() {
         $.ajax({
-            url: 'http://localhost:5000/friends/' + localStorage.selfUserId,
+            url: 'http://192.168.20.118:5000/friends/' + localStorage.selfUserId,
             type: 'get',
             success: function (data, status) {
                 socketFun(data._id)

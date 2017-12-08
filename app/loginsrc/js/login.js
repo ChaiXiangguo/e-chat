@@ -30,7 +30,7 @@ submit.onclick = () => {
                         frame: true
                     })
                     winchat.on('close', () => { winchat = null })
-                    // winchat.webContents.openDevTools()
+                    winchat.webContents.openDevTools()
                     winchat.loadURL(url.format({
                         pathname: path.join(__dirname, '../../render-process/html/chat.html'),
                         protocol: 'file:',
