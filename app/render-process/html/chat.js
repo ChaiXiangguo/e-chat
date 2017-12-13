@@ -144,6 +144,13 @@ $("#tabs li").bind("click", function () {
     divs.hide();//隐藏所有选中项内容
     divs.eq(index).show(); //显示选中项对应内容
 })
+$("#sendImg").bind("click", function () {
+    $('#sendImage').trigger('click')
+})
+// 点击清空消息按钮
+$("#delectChatH").bind("click", function () {
+    $("#chatbox").html("")
+})
 $("#ftabs li").bind("click", function () {
     var index = $(this).index();
     var divs = $("#ftabs-body > div");

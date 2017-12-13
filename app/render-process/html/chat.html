@@ -17,7 +17,7 @@
       <div class="content-box">
         <div class="tabs">
           <ul id="tabs">
-            <li class="tab-nav-action">聊天</li>
+            <li id="chatMMt" class="tab-nav-action">聊天</li>
             <li id="managemenTabs" class="tab-nav">好友管理</li>
             <li class="tab-nav">有聊群组</li>
           </ul>
@@ -36,9 +36,10 @@
       <ul id="chatbox" class="chat-thread"></ul>
       <div class="chat-window-box">
         <div class="shortcut-btn">
-          <i class="fa fa-picture-o" aria-hidden="true"></i>
+          <i id="sendImg" class="fa fa-picture-o" aria-hidden="true"></i>
           <i id="emoji" class="fa fa-smile-o" aria-hidden="true"></i>
-          <i class="fa fa-trash-o" aria-hidden="true"></i>
+          <i id="delectChatH" class="fa fa-trash-o" aria-hidden="true"></i>
+          <input id="sendImage" type="file" value="图片" accept="image/*" style="display: none"/>
         </div>
         <div id="sendMsgbtn" class="send-btn">
           <i class="fa fa-paper-plane" aria-hidden="true"></i>
@@ -124,7 +125,8 @@
   </div>
   <!-- <script type="text/javascript" src="./jquery.min.js"></script> -->
   <script type="text/javascript" src="./chat.js"></script>
-  <script type="text/javascript" src="http://localhost:5000/socket.io/socket.io.js"></script> 
+   <script type="text/javascript" src="http://localhost:5000/socket.io/socket.io.js"></script> 
+  <script src="./content/socket.io-stream.js"></script>
   <script type="text/javascript" src="./chatajax.js"></script>
 </body>
 

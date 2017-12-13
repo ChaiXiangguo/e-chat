@@ -1,7 +1,9 @@
 // const $ = require('jquery')
 const { BrowserWindow } = require('electron').remote;
-const { ipcRenderer } = require('electron')
-const nedb = require('nedb')
+const { ipcRenderer, remote } = require('electron')
+const Datastore = require('nedb')
+var fs = require('fs')
+var path = require('path')
 let db
 // import io from 'socket.io-client'
 var requstUser = '' // 请求好友的Id
@@ -35,37 +37,108 @@ onload = () => {
     ipcRenderer.on('msg', (event, winId, msg) => {
         selfUserId = msg._id
         localStorage.selfUserId = msg._id;
-        db = new nedb({
-            filename: `./data/${msg._id}.db`,
+        console.log(path.join(remote.app.getPath('userData')))
+        db = new Datastore({
+            filename: path.join(remote.app.getPath('userData'), `/${msg._id}.db`),
             autoload: true
         })
-        db.find({form: 'user'}, function(err, sucs) {
-            let defaultItemhtml = ''
-            for (let i = 0; i < sucs.length; i++ ) {
-                if (sucs[i].type = 'single') {
-                    
-                }
-                defaultItemhtml = defaultItemhtml + '<div nameId="'
-                + sucs[i].nameId +
-                 'class="item-chat"><img src="./content/img/1.jpg"><p>' +
-                sucs[i].namem
-                + '</p><i class="fa fa-times" aria-hidden="true"></i></div>'
-            }
-            $('#defaultItem').html(defaultItemhtml)
-        })
+        findchat()
         $("#manageFriends").html(friendMhtml(msg))
         $("#getInforDiv").html(inforHtmlDiv(msg.framef))
         $("#manageChatGroup").html(chatgroupFun(msg.chatgroup))
         socketFun(msg._id)
     })
+    // 查询本地聊天对象数据
+    function findchat() {
+        db.find({ form: 'user' }).sort({ updata: -1 }).exec((err, sucs) => {
+            let defaultItemhtml = ''
+            chatType = sucs[0].type
+            monmentChat = sucs[0].nameId
+            for (let i = 0; i < sucs.length; i++) {
+                if (sucs[i].type === 'single') {
+                    defaultItemhtml = defaultItemhtml + '<div nameId="'
+                        + sucs[i].nameId +
+                        '" class="item-chat"><img src="./content/img/1.jpg"><p>' +
+                        sucs[i].namem
+                        + '</p><i class="fa fa-times" aria-hidden="true"></i></div>'
+                } else {
+                    defaultItemhtml = defaultItemhtml + '<div nameId="'
+                        + sucs[i].nameId +
+                        '" class="item-chat"><img src="./content/img/4.jpg"><p>' +
+                        sucs[i].namem
+                        + '</p><i class="fa fa-times" aria-hidden="true"></i></div>'
+                }
+            }
+            $('#defaultItem').html(defaultItemhtml)
+        })
+    }
+    // 点击聊天按钮
+    $('#chatMMt').click(findchat)
+    // 点击聊天删除按钮
+    $("#defaultItem").on("click", "i", function () {
+        console.log($(this).parent().attr('nameId'))
+        db.remove({ "nameId": $(this).parent().attr('nameId') }, {}, (err, doc) => {
+            console.log('err', err, doc)
+            findchat()
+        })
+    })
     // sockit
     function socketFun(uid) {
         socket = io.connect('http://192.168.20.118:5000');
+        // $('#file').change(function (e) {
+        //     ss.forceBase64 = true;
+        //     var file = e.target.files[0];
+        //     var stream = ss.createStream();
+        //     console.log('stream is', stream)
+        //     var filename = file.name;
+        //     ss(socket).emit('file', stream, { size: file.size });
+        //     ss.createBlobReadStream(file).pipe(stream);
+        //     // upload a file to the server.
+        //     // ss(socket).emit('file', stream, { size: file.size });
+        //     // ss.createBlobReadStream(file).pipe(stream);
+        // });
+        let indexflag = 1
+        $('#sendImage').change(function (e) {
+            if (monmentChat) {
+                var file = e.target.files[0];
+                reader = new FileReader();
+                reader.onload = function (e) {
+                    if (indexflag) {
+                        indexflag = 0
+                        setTimeout(function () {
+                            indexflag = 1
+                        }, 1000);
+                        //读取成功，显示到页面并发送到服务器
+                        this.value = '';
+                        socket.emit('img', { from: localStorage.selfUserId, to: monmentChat, msg: e.target.result, type: chatType, infor: {} });
+                        $("#chatbox").append('<li class="togo"><img src="' + e.target.result + '"></img></li>')
+                        $("#chatbox")[0].scrollTop = $("#chatbox")[0].scrollHeight
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert("请选择聊天对象！")
+            }
+
+            // var stream = ss.createStream();
+            // // upload a file to the server.
+            // ss(socket).emit('send-file', stream, file);
+            // ss.createBlobReadStream(file).pipe(stream);
+            // $('#file').val('');
+            // $('#file').after('<p>File uploaded!</p>');
+        });
         socket.on("connect", function () {
             socket.emit('login', { user: uid });
             socket.on("toSomeone", function (data) {
                 $("#chatbox").append('<li class="come">' + showEmoji(data.infor) + '</li>')
-                $("#chatbox").scrollTop = $("#chatbox").scrollHeight
+                $("#chatbox")[0].scrollTop = $("#chatbox")[0].scrollHeight
+                // var str=$("#contentTxt").val()+"\n"+data;
+                // $("#contentTxt").val(str);
+            })
+            socket.on("newImg", function (data) {
+                $("#chatbox").append('<li class="come"><img src="' + data.infor + '"></li>')
+                console.log(scrollHeight)
+                $("#chatbox")[0].scrollTop = $("#chatbox")[0].scrollHeight
                 // var str=$("#contentTxt").val()+"\n"+data;
                 // $("#contentTxt").val(str);
             })
@@ -80,6 +153,20 @@ onload = () => {
             // })
         })
     }
+    $("#messageInput").on("keyup", function (e) {
+        if (e.keyCode == 13 && $("#messageInput").val().trim().length != 0) {
+            if (monmentChat) {
+                // console.log(monmentChat, localStorage.selfUserId)
+                $("#chatbox").append('<li class="togo">' + showEmoji($("#messageInput").val()) + '</li>')
+                $("#chatbox").scrollTop = $("#chatbox").scrollHeight
+                socket.emit('postMsg', { from: localStorage.selfUserId, to: monmentChat, msg: $("#messageInput").val(), type: chatType, infor: {} });
+                $("#messageInput").val('')
+                $("#chatbox")[0].scrollTop = $("#chatbox")[0].scrollHeight
+            } else {
+                alert("请选择聊天对象！")
+            }
+        };
+    })
     //发送消息
     $("#sendMsgbtn").on("click", function () {
         if (monmentChat) {
@@ -88,6 +175,7 @@ onload = () => {
             $("#chatbox").scrollTop = $("#chatbox").scrollHeight
             socket.emit('postMsg', { from: localStorage.selfUserId, to: monmentChat, msg: $("#messageInput").val(), type: chatType, infor: {} });
             $("#messageInput").val('')
+            $("#chatbox")[0].scrollTop = $("#chatbox")[0].scrollHeight
         } else {
             alert("请选择聊天对象！")
         }
@@ -112,6 +200,8 @@ onload = () => {
     $("#manageChatGroup").on("click", "span", function () {
         monmentChat = $(this).attr("infor")
         let namem = $(this, 'p').text()
+        $('#chatbox').html('')
+        console.log(db)
         db.findOne({ nameId: monmentChat }, function (err, docs) {
             // docs contains Mars 
             if (err) {
@@ -291,7 +381,7 @@ onload = () => {
             url: 'http://192.168.20.118:5000/idfriendsinfo/' + $(this).attr('infor'),
             type: 'get',
             success: function (data, status) {
-                console.log($(that).attr('infor'), data._id)
+                $('#chatbox').html('')
                 monmentChat = $(that).attr('infor')
                 let namem = $(that, 'p').text()
                 chatType = 'single'
